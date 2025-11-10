@@ -1,0 +1,42 @@
+# Arquivos do Sistema Operacional
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+*~
+
+# IDEs e Editores
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+.eclipse
+*.pyc
+
+# Diretórios de dependências
+node_modules/
+vendor/
+
+# Arquivos de log
+*.log
+logs/
+
+# Arquivos temporários
+tmp/
+temp/
+*.tmp
+
+# Arquivos de configuração local
+config.local.php
+.env.local
+
+# Arquivos de teste
+test-results/
+coverage/
+
+# Arquivos de compilação
+dist/
+build/
+
+# Arquivos de dados sensíveis
+data/tasks.json (comentado - descomente se quiser ignorar)
