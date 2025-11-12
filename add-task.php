@@ -86,6 +86,7 @@ require_once ('functions.php');
                 <li><strong>Revise regularmente:</strong> Atualize o status das suas tarefas</li>
             </ul>
         </div>
+</div>
 
         <!-- FOOTER -->
         <footer>

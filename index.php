@@ -37,14 +37,14 @@ if (isset($_GET['success'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Gerenciamento de Tarefas</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="/todo-list/css/style.css">
 </head>
 <body>
     <div class="container">
         <!-- HEADER -->
         <header>
-            <h1>📋 Meu Gerenciador de Tarefas</h1>
-            <p style="color: #666; margin-bottom: 20px;">Organize suas tarefas de forma simples e eficiente</p>
+            <h1 style="color: white;"> 📋 Meu Gerenciador de Tarefas</h1>
+            <p style="color: #ffffffff; margin-bottom: 20px;">Organize suas tarefas de forma simples e eficiente</p>
         </header>
 
         <!-- NAVEGAÇÃO -->
@@ -52,6 +52,7 @@ if (isset($_GET['success'])) {
             <a href="index.php" class="btn btn-primary">📊 Minhas Tarefas</a>
             <a href="add-task.php" class="btn btn-success">➕ Nova Tarefa</a>
         </nav>
+        <div class="content">
 
         <!-- MENSAGEM DE SUCESSO -->
         <?php if ($successMessage): ?>
@@ -131,6 +132,7 @@ if (isset($_GET['success'])) {
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
+                        </div>
 
         <!-- FOOTER -->
         <footer>

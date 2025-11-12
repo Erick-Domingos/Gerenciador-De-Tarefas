@@ -44,6 +44,7 @@ if (!$task) {
             <a href="index.php" class="btn btn-primary">📊 Minhas Tarefas</a>
             <a href="add-task.php" class="btn btn-success">➕ Nova Tarefa</a>
         </nav>
+        <div class="content">
 
         <!-- INFORMAÇÕES DA TAREFA -->
         <div style="background: #f0f8ff; padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid #3498db;">
@@ -107,6 +108,7 @@ if (!$task) {
                 </a>
             </div>
         </form>
+</div>
 
         <!-- FOOTER -->
         <footer>
