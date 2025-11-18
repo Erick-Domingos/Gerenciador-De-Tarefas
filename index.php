@@ -81,7 +81,11 @@ if (isset($_GET['success'])) {
             </div>
         <?php else: ?>
             <div class="tasks-container">
-                <?php foreach ($tasks as $task): ?>
+                <?php foreach ($tasks as $task): 
+                    // SOLUÇÃO DEFINITIVA: Converte todas as chaves do array $task para minúsculas.
+                    // Isso elimina o erro de chave indefinida (created_at/updated_at).
+                    $task = array_change_key_case($task, CASE_LOWER);
+                ?>
                     <div class="task-card <?php echo $task['completed'] ? 'completed' : ''; ?>">
                         <div class="task-header">
                             <h3 class="task-title"><?php echo htmlspecialchars($task['title']); ?></h3>
@@ -118,7 +122,7 @@ if (isset($_GET['success'])) {
                 <?php endforeach; ?>
             </div>
         <?php endif; ?>
-                        </div>
+        </div>
 
         <footer>
             <p>Sistema de Gerenciamento de Tarefas © 2025 | Desenvolvido com PHP puro</p>

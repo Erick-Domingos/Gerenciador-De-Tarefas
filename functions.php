@@ -1,209 +1,169 @@
 <?php
-/**
- * Arquivo de Funções Auxiliares
- * Contém todas as funções para manipulação de tarefas
- */
 
-// Caminho do arquivo de dados
-define('DATA_FILE', __DIR__ . '/data/tasks.json');
+require_once('db_connect.php');
 
-/**
- * Carrega todas as tarefas do arquivo JSON
- * 
- * @return array Array de tarefas
- */
 function loadTasks() {
-    if (!file_exists(DATA_FILE)) {
-        return [];
+    global $conn;
+    $tasks = [];
+    
+    // CORREÇÃO 1: Adicionar explicitamente as colunas de data ao SELECT.
+    $sql = "SELECT id, title, description, is_completed, created_at, updated_at FROM tasks ORDER BY created_at DESC";
+    $result = $conn->query($sql);
+
+    if ($result && $result->num_rows > 0) {
+        while($row = $result->fetch_assoc()) {
+            // CORREÇÃO 2: Força todas as chaves do array para minúsculas.
+            // Isso garante que 'created_at' e 'updated_at' sejam acessíveis.
+            $row = array_change_key_case($row, CASE_LOWER); 
+            
+            $row['completed'] = (bool)$row['is_completed'];
+            unset($row['is_completed']);
+            $tasks[] = $row;
+        }
     }
     
-    $json = file_get_contents(DATA_FILE);
-    $tasks = json_decode($json, true);
-    
-    return is_array($tasks) ? $tasks : [];
+    return $tasks;
 }
 
-/**
- * Salva as tarefas no arquivo JSON
- * 
- * @param array $tasks Array de tarefas a salvar
- * @return bool True se salvou com sucesso, False caso contrário
- */
-function saveTasks($tasks) {
-    $json = json_encode($tasks, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-    return file_put_contents(DATA_FILE, $json) !== false;
-}
-
-/**
- * Adiciona uma nova tarefa
- * 
- * @param string $title Título da tarefa
- * @param string $description Descrição da tarefa
- * @return bool True se adicionou com sucesso
- */
 function addTask($title, $description) {
-    // Validação
+    global $conn;
+
     if (empty(trim($title))) {
         return false;
     }
-    
-    $tasks = loadTasks();
-    
-    // Criar nova tarefa
-    $newTask = [
-        'id' => time(), // Usar timestamp como ID único
-        'title' => sanitize($title),
-        'description' => sanitize($description),
-        'completed' => false,
-        'created_at' => date('Y-m-d H:i:s'),
-        'updated_at' => date('Y-m-d H:i:s')
-    ];
-    
-    $tasks[] = $newTask;
-    
-    return saveTasks($tasks);
+
+    $sql = "INSERT INTO tasks (title, description) VALUES (?, ?)";
+    $stmt = $conn->prepare($sql);
+
+    if ($stmt === false) {
+        return false;
+    }
+
+    $stmt->bind_param("ss", $title, $description);
+    $success = $stmt->execute();
+    $stmt->close();
+
+    return $success;
 }
 
-/**
- * Obtém uma tarefa específica pelo ID
- * 
- * @param int $id ID da tarefa
- * @return array|null Array da tarefa ou null se não encontrada
- */
 function getTaskById($id) {
-    $tasks = loadTasks();
+    global $conn;
     
-    foreach ($tasks as $task) {
-        if ($task['id'] == $id) {
-            return $task;
-        }
+    // CORREÇÃO 1: Adicionar explicitamente as colunas de data ao SELECT.
+    $sql = "SELECT id, title, description, is_completed, created_at, updated_at FROM tasks WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+    
+    if ($stmt === false) {
+        return null;
     }
     
-    return null;
+    $stmt->bind_param("i", $id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $task = $result->fetch_assoc();
+    $stmt->close();
+    
+    if ($task) {
+        // CORREÇÃO 2: Força todas as chaves do array para minúsculas.
+        $task = array_change_key_case($task, CASE_LOWER);
+        
+        $task['completed'] = (bool)$task['is_completed'];
+        unset($task['is_completed']);
+    }
+    
+    return $task;
 }
 
-/**
- * Atualiza uma tarefa existente
- * 
- * @param int $id ID da tarefa
- * @param string $title Novo título
- * @param string $description Nova descrição
- * @return bool True se atualizou com sucesso
- */
 function updateTask($id, $title, $description) {
+    global $conn;
+
     if (empty(trim($title))) {
         return false;
     }
-    
-    $tasks = loadTasks();
-    
-    foreach ($tasks as &$task) {
-        if ($task['id'] == $id) {
-            $task['title'] = sanitize($title);
-            $task['description'] = sanitize($description);
-            $task['updated_at'] = date('Y-m-d H:i:s');
-            break;
-        }
+
+    $sql = "UPDATE tasks SET title = ?, description = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+
+    if ($stmt === false) {
+        return false;
     }
-    
-    return saveTasks($tasks);
+
+    $stmt->bind_param("ssi", $title, $description, $id);
+    $success = $stmt->execute();
+    $stmt->close();
+
+    return $success;
 }
 
-/**
- * Deleta uma tarefa
- * 
- * @param int $id ID da tarefa a deletar
- * @return bool True se deletou com sucesso
- */
 function deleteTask($id) {
-    $tasks = loadTasks();
-    
-    foreach ($tasks as $key => $task) {
-        if ($task['id'] == $id) {
-            unset($tasks[$key]);
-            // Reindexar o array
-            $tasks = array_values($tasks);
-            return saveTasks($tasks);
-        }
+    global $conn;
+
+    $sql = "DELETE FROM tasks WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+
+    if ($stmt === false) {
+        return false;
     }
-    
-    return false;
+
+    $stmt->bind_param("i", $id);
+    $success = $stmt->execute();
+    $stmt->close();
+
+    return $success;
 }
 
-/**
- * Alterna o status de uma tarefa (Pendente/Concluída)
- * 
- * @param int $id ID da tarefa
- * @return bool True se atualizou com sucesso
- */
 function toggleTaskStatus($id) {
-    $tasks = loadTasks();
-    
-    foreach ($tasks as &$task) {
-        if ($task['id'] == $id) {
-            $task['completed'] = !$task['completed'];
-            $task['updated_at'] = date('Y-m-d H:i:s');
-            break;
-        }
+    global $conn;
+
+    $task = getTaskById($id);
+    if (!$task) {
+        return false;
     }
     
-    return saveTasks($tasks);
+    $newStatus = $task['completed'] ? 0 : 1;
+
+    $sql = "UPDATE tasks SET is_completed = ? WHERE id = ?";
+    $stmt = $conn->prepare($sql);
+
+    if ($stmt === false) {
+        return false;
+    }
+
+    $stmt->bind_param("ii", $newStatus, $id);
+    $success = $stmt->execute();
+    $stmt->close();
+
+    return $success;
 }
 
-/**
- * Sanitiza uma string para evitar XSS
- * 
- * @param string $input String a sanitizar
- * @return string String sanitizada
- */
 function sanitize($input) {
     return htmlspecialchars(trim($input), ENT_QUOTES, 'UTF-8');
 }
 
-/**
- * Formata uma data para exibição
- * 
- * @param string $date Data no formato Y-m-d H:i:s
- * @return string Data formatada
- */
 function formatDate($date) {
     return date('d/m/Y H:i', strtotime($date));
 }
 
-/**
- * Retorna o número total de tarefas
- * 
- * @return int Total de tarefas
- */
 function getTotalTasks() {
-    $tasks = loadTasks();
-    return count($tasks);
-}
-
-/**
- * Retorna o número de tarefas concluídas
- * 
- * @return int Total de tarefas concluídas
- */
-function getCompletedTasks() {
-    $tasks = loadTasks();
-    $completed = 0;
-    
-    foreach ($tasks as $task) {
-        if ($task['completed']) {
-            $completed++;
-        }
+    global $conn;
+    $result = $conn->query("SELECT COUNT(*) as total FROM tasks");
+    if ($result) {
+        return (int)$result->fetch_assoc()['total'];
     }
-    
-    return $completed;
+    return 0;
 }
 
-/**
- * Retorna o número de tarefas pendentes
- * 
- * @return int Total de tarefas pendentes
- */
+function getCompletedTasks() {
+    global $conn;
+    $result = $conn->query("SELECT COUNT(*) as total FROM tasks WHERE is_completed = 1");
+    if ($result) {
+        return (int)$result->fetch_assoc()['total'];
+    }
+    return 0;
+}
+
 function getPendingTasks() {
     return getTotalTasks() - getCompletedTasks();
 }
+
 ?>
