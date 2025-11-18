@@ -1,21 +1,14 @@
 <?php
-/**
- * Página Principal - Lista de Tarefas
- * Exibe todas as tarefas cadastradas
- */
 
 require_once('functions.php');
 
-// Carregar todas as tarefas
 $tasks = loadTasks();
 
-// Calcular estatísticas
 $totalTasks = getTotalTasks();
 $completedTasks = getCompletedTasks();
 $pendingTasks = getPendingTasks();
 $completionPercentage = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
 
-// Verificar se há mensagem de sucesso
 $successMessage = '';
 if (isset($_GET['success'])) {
     switch ($_GET['success']) {
@@ -41,27 +34,23 @@ if (isset($_GET['success'])) {
 </head>
 <body>
     <div class="container">
-        <!-- HEADER -->
         <header>
             <h1 style="color: white;"> 📋 Meu Gerenciador de Tarefas</h1>
             <p style="color: #ffffffff; margin-bottom: 20px;">Organize suas tarefas de forma simples e eficiente</p>
         </header>
 
-        <!-- NAVEGAÇÃO -->
         <nav>
             <a href="index.php" class="btn btn-primary">📊 Minhas Tarefas</a>
             <a href="add-task.php" class="btn btn-success">➕ Nova Tarefa</a>
         </nav>
         <div class="content">
 
-        <!-- MENSAGEM DE SUCESSO -->
         <?php if ($successMessage): ?>
             <div class="alert alert-success">
                 ✓ <?php echo htmlspecialchars($successMessage); ?>
             </div>
         <?php endif; ?>
 
-        <!-- ESTATÍSTICAS -->
         <div class="stats">
             <div class="stat-card">
                 <div class="stat-number"><?php echo $totalTasks; ?></div>
@@ -81,11 +70,9 @@ if (isset($_GET['success'])) {
             </div>
         </div>
 
-        <!-- LISTA DE TAREFAS -->
         <h2>Tarefas Cadastradas</h2>
 
         <?php if (empty($tasks)): ?>
-            <!-- ESTADO VAZIO -->
             <div class="empty-state">
                 <div class="empty-state-icon">📭</div>
                 <h2>Nenhuma tarefa cadastrada</h2>
@@ -93,7 +80,6 @@ if (isset($_GET['success'])) {
                 <a href="add-task.php" class="btn btn-primary">Criar Primeira Tarefa</a>
             </div>
         <?php else: ?>
-            <!-- CARDS DE TAREFAS -->
             <div class="tasks-container">
                 <?php foreach ($tasks as $task): ?>
                     <div class="task-card <?php echo $task['completed'] ? 'completed' : ''; ?>">
@@ -134,7 +120,6 @@ if (isset($_GET['success'])) {
         <?php endif; ?>
                         </div>
 
-        <!-- FOOTER -->
         <footer>
             <p>Sistema de Gerenciamento de Tarefas © 2025 | Desenvolvido com PHP puro</p>
         </footer>
