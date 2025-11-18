@@ -17,8 +17,8 @@ require_once ('functions.php');
     <div class="container">
         <!-- HEADER -->
         <header>
-            <h1>➕ Adicionar Nova Tarefa</h1>
-            <p style="color: #666; margin-bottom: 20px;">Preencha os dados abaixo para criar uma nova tarefa</p>
+            <h1 style="color: white;" >➕Adicionar Nova Tarefa</h1>
+            <p style="color: #ffffffff; margin-bottom: 20px;">Preencha os dados abaixo para criar uma nova tarefa</p>
         </header>
 
         <!-- NAVEGAÇÃO -->
