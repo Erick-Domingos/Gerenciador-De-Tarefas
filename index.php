@@ -82,8 +82,7 @@ if (isset($_GET['success'])) {
         <?php else: ?>
             <div class="tasks-container">
                 <?php foreach ($tasks as $task): 
-                    // SOLUÇÃO DEFINITIVA: Converte todas as chaves do array $task para minúsculas.
-                    // Isso elimina o erro de chave indefinida (created_at/updated_at).
+                   
                     $task = array_change_key_case($task, CASE_LOWER);
                 ?>
                     <div class="task-card <?php echo $task['completed'] ? 'completed' : ''; ?>">

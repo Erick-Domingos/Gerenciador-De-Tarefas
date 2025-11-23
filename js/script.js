@@ -1,25 +1,14 @@
-/**
- * Sistema de Gerenciamento de Tarefas
- * Script JavaScript para validações e interatividades
- */
 
-// ============================================
-// VALIDAÇÃO DE FORMULÁRIOS
-// ============================================
-
-/**
- * Valida o formulário de tarefa
- */
 function validateTaskForm() {
     const title = document.getElementById('title');
     const description = document.getElementById('description');
     
-    // Limpar mensagens de erro anteriores
+   
     clearErrors();
     
     let isValid = true;
     
-    // Validar título
+    
     if (!title || title.value.trim() === '') {
         showError(title, 'O título da tarefa é obrigatório');
         isValid = false;
@@ -31,7 +20,7 @@ function validateTaskForm() {
         isValid = false;
     }
     
-    // Validar descrição
+   
     if (description && description.value.trim().length > 500) {
         showError(description, 'A descrição não pode ter mais de 500 caracteres');
         isValid = false;
@@ -40,9 +29,7 @@ function validateTaskForm() {
     return isValid;
 }
 
-/**
- * Exibe mensagem de erro em um campo
- */
+
 function showError(element, message) {
     if (!element) return;
     
@@ -59,9 +46,7 @@ function showError(element, message) {
     element.parentNode.appendChild(errorDiv);
 }
 
-/**
- * Limpa todas as mensagens de erro
- */
+
 function clearErrors() {
     const errorMessages = document.querySelectorAll('.error-message');
     errorMessages.forEach(msg => msg.remove());
@@ -73,32 +58,18 @@ function clearErrors() {
     });
 }
 
-// ============================================
-// CONFIRMAÇÃO DE AÇÕES
-// ============================================
 
-/**
- * Confirma a exclusão de uma tarefa
- */
 function confirmDelete(taskId, taskTitle) {
     const message = `Tem certeza que deseja deletar a tarefa "${taskTitle}"?\n\nEsta ação não pode ser desfeita.`;
     return confirm(message);
 }
 
-/**
- * Confirma ações gerais
- */
+
 function confirmAction(message) {
     return confirm(message);
 }
 
-// ============================================
-// MANIPULAÇÃO DE TAREFAS VIA AJAX
-// ============================================
 
-/**
- * Alterna o status de uma tarefa sem recarregar a página
- */
 function toggleTaskStatus(taskId, element) {
     const formData = new FormData();
     formData.append('action', 'toggle');
@@ -111,12 +82,12 @@ function toggleTaskStatus(taskId, element) {
     .then(response => response.json())
     .then(data => {
         if (data.success) {
-            // Atualizar visualmente o card
+            
             const taskCard = element.closest('.task-card');
             if (taskCard) {
                 taskCard.classList.toggle('completed');
                 
-                // Atualizar status
+                
                 const statusBadge = taskCard.querySelector('.task-status');
                 if (statusBadge) {
                     if (statusBadge.classList.contains('pending')) {
@@ -131,7 +102,7 @@ function toggleTaskStatus(taskId, element) {
                 }
             }
             
-            // Atualizar estatísticas
+            
             updateStats();
             
             showNotification('Status da tarefa atualizado com sucesso!', 'success');
@@ -145,16 +116,14 @@ function toggleTaskStatus(taskId, element) {
     });
 }
 
-/**
- * Atualiza as estatísticas em tempo real
- */
+
 function updateStats() {
     const totalCards = document.querySelectorAll('.task-card').length;
     const completedCards = document.querySelectorAll('.task-card.completed').length;
     const pendingCards = totalCards - completedCards;
     const completionPercentage = totalCards > 0 ? Math.round((completedCards / totalCards) * 100) : 0;
     
-    // Atualizar os números nas estatísticas
+    
     const statCards = document.querySelectorAll('.stat-card');
     if (statCards.length >= 4) {
         statCards[0].querySelector('.stat-number').textContent = totalCards;
@@ -164,13 +133,7 @@ function updateStats() {
     }
 }
 
-// ============================================
-// NOTIFICAÇÕES
-// ============================================
 
-/**
- * Exibe uma notificação na tela
- */
 function showNotification(message, type = 'info') {
     const notification = document.createElement('div');
     notification.className = `alert alert-${type}`;
@@ -183,7 +146,7 @@ function showNotification(message, type = 'info') {
     
     document.body.appendChild(notification);
     
-    // Remover após 5 segundos
+    
     setTimeout(() => {
         notification.style.opacity = '0';
         notification.style.transition = 'opacity 0.3s ease';
@@ -191,13 +154,7 @@ function showNotification(message, type = 'info') {
     }, 5000);
 }
 
-// ============================================
-// UTILITÁRIOS
-// ============================================
 
-/**
- * Formata uma data para exibição
- */
 function formatDate(dateString) {
     const options = {
         year: 'numeric',
@@ -210,31 +167,21 @@ function formatDate(dateString) {
     return new Date(dateString).toLocaleDateString('pt-BR', options);
 }
 
-/**
- * Conta o número de tarefas
- */
+
 function countTasks() {
     const taskCards = document.querySelectorAll('.task-card');
     return taskCards.length;
 }
 
-/**
- * Conta o número de tarefas concluídas
- */
+
 function countCompletedTasks() {
     const completedCards = document.querySelectorAll('.task-card.completed');
     return completedCards.length;
 }
 
-// ============================================
-// INICIALIZAÇÃO
-// ============================================
 
-/**
- * Inicializa os event listeners quando o DOM está pronto
- */
 document.addEventListener('DOMContentLoaded', function() {
-    // Validar formulário ao submeter
+    
     const forms = document.querySelectorAll('form');
     forms.forEach(form => {
         form.addEventListener('submit', function(e) {
@@ -244,7 +191,7 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     });
     
-    // Limpar erros ao digitar
+    
     const inputs = document.querySelectorAll('input[type="text"], textarea');
     inputs.forEach(input => {
         input.addEventListener('input', function() {
@@ -260,13 +207,8 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Sistema de Tarefas inicializado com sucesso!');
 });
 
-// ============================================
-// FUNÇÕES AUXILIARES DE INTERFACE
-// ============================================
 
-/**
- * Alterna a visibilidade de um elemento
- */
+ 
 function toggleElement(elementId) {
     const element = document.getElementById(elementId);
     if (element) {
@@ -274,9 +216,7 @@ function toggleElement(elementId) {
     }
 }
 
-/**
- * Limpa um formulário
- */
+
 function clearForm(formId) {
     const form = document.getElementById(formId);
     if (form) {
@@ -285,9 +225,7 @@ function clearForm(formId) {
     }
 }
 
-/**
- * Copia um texto para a área de transferência
- */
+
 function copyToClipboard(text) {
     navigator.clipboard.writeText(text).then(() => {
         showNotification('Texto copiado para a área de transferência!', 'success');

@@ -6,14 +6,13 @@ function loadTasks() {
     global $conn;
     $tasks = [];
     
-    // CORREÇÃO 1: Adicionar explicitamente as colunas de data ao SELECT.
+   
     $sql = "SELECT id, title, description, is_completed, created_at, updated_at FROM tasks ORDER BY created_at DESC";
     $result = $conn->query($sql);
 
     if ($result && $result->num_rows > 0) {
         while($row = $result->fetch_assoc()) {
-            // CORREÇÃO 2: Força todas as chaves do array para minúsculas.
-            // Isso garante que 'created_at' e 'updated_at' sejam acessíveis.
+            
             $row = array_change_key_case($row, CASE_LOWER); 
             
             $row['completed'] = (bool)$row['is_completed'];
@@ -49,7 +48,7 @@ function addTask($title, $description) {
 function getTaskById($id) {
     global $conn;
     
-    // CORREÇÃO 1: Adicionar explicitamente as colunas de data ao SELECT.
+    
     $sql = "SELECT id, title, description, is_completed, created_at, updated_at FROM tasks WHERE id = ?";
     $stmt = $conn->prepare($sql);
     
@@ -64,7 +63,7 @@ function getTaskById($id) {
     $stmt->close();
     
     if ($task) {
-        // CORREÇÃO 2: Força todas as chaves do array para minúsculas.
+        
         $task = array_change_key_case($task, CASE_LOWER);
         
         $task['completed'] = (bool)$task['is_completed'];
